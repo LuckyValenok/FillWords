@@ -15,10 +15,6 @@ public class Menu {
     private static Screen screen;
     
     private final int BUTTON_OFFSET_X = 30;
-    private final int START_GAME = 11;
-    private final int PROCEED = 12;
-    private final int RATING = 13;
-    private final int EXTT = 14;
     
     private boolean isLive;
     
@@ -54,27 +50,31 @@ public class Menu {
         terminal.exitPrivateMode();
     }
     
-    private int handleMainMenu() {
-        int selected = START_GAME;
+    private void clearScreen() {
+        screen.clear();
+    }
+    
+    private GameButton handleMainMenu() {
+        int selected = GameButton.START_GAME.getY();
         Key k;
         while (isLive) {
             k = readKeyInput();
             if (k != null) {
                 switch (k.getKind()) {
                     case ArrowDown:
-                        if (selected < EXTT)
+                        if (selected < GameButton.EXTT.getY())
                             selected++;
                         break;
                     case ArrowUp:
-                        if (selected > START_GAME)
+                        if (selected > GameButton.START_GAME.getY())
                             selected--;
                         break;
                     case Enter:
-                        return selected;
+                        return GameButton.getButton(selected);
                     default:
                         break;
                 }
-                highlighMainMenuSelectedOption(selected);
+                drawMainSelOption(GameButton.getButton(selected));
             }
             try {
                 Thread.sleep(100);
@@ -82,14 +82,14 @@ public class Menu {
                 ie.printStackTrace();
             }
         }
-        return 0;
+        return GameButton.START_GAME;
     }
     
-    private void highlighMainMenuSelectedOption(int selected) {
-        drawString(BUTTON_OFFSET_X, START_GAME, "Новая игра", selected == START_GAME ? Terminal.Color.WHITE : Terminal.Color.BLUE);
-        drawString(BUTTON_OFFSET_X, PROCEED, "Продолжить", selected == PROCEED ? Terminal.Color.WHITE : Terminal.Color.BLUE);
-        drawString(BUTTON_OFFSET_X, RATING, "Рейтинг", selected == RATING ? Terminal.Color.WHITE : Terminal.Color.BLUE);
-        drawString(BUTTON_OFFSET_X, EXTT, "Выход", selected == EXTT ? Terminal.Color.WHITE : Terminal.Color.BLUE);
+    private void drawMainSelOption(GameButton selected) {
+        drawString(BUTTON_OFFSET_X, GameButton.START_GAME.getY(), "Новая игра", selected == GameButton.START_GAME ? Terminal.Color.WHITE : Terminal.Color.BLUE);
+        drawString(BUTTON_OFFSET_X, GameButton.PROCEED.getY(), "Продолжить", selected == GameButton.PROCEED ? Terminal.Color.WHITE : Terminal.Color.BLUE);
+        drawString(BUTTON_OFFSET_X, GameButton.RATING.getY(), "Рейтинг", selected == GameButton.RATING ? Terminal.Color.WHITE : Terminal.Color.BLUE);
+        drawString(BUTTON_OFFSET_X, GameButton.EXTT.getY(), "Выход", selected == GameButton.EXTT ? Terminal.Color.WHITE : Terminal.Color.BLUE);
         
         refreshScreen();
     }
@@ -98,17 +98,17 @@ public class Menu {
         int x = 20;
         int y = 2;
         
-        drawString(x, y,   "╔══╗╔══╗╔╗  ╔╗  ╔╗╔╗╔╗╔══╗╔═══╗╔══╗ ╔══╗", Terminal.Color.GREEN);
+        drawString(x, y, "╔══╗╔══╗╔╗  ╔╗  ╔╗╔╗╔╗╔══╗╔═══╗╔══╗ ╔══╗", Terminal.Color.GREEN);
         drawString(x, ++y, "║╔═╝╚╗╔╝║║  ║║  ║║║║║║║╔╗║║╔═╗║║╔╗╚╗║╔═╝", Terminal.Color.GREEN);
         drawString(x, ++y, "║╚═╗ ║║ ║║  ║║  ║║║║║║║║║║║╚═╝║║║╚╗║║╚═╗", Terminal.Color.GREEN);
         drawString(x, ++y, "║╔═╝ ║║ ║║  ║║  ║║║║║║║║║║║╔╗╔╝║║ ║║╚═╗║", Terminal.Color.GREEN);
         drawString(x, ++y, "║║  ╔╝╚╗║╚═╗║╚═╗║╚╝╚╝║║╚╝║║║║║ ║╚═╝║╔═╝║", Terminal.Color.GREEN);
         drawString(x, ++y, "╚╝  ╚══╝╚══╝╚══╝╚═╝╚═╝╚══╝╚╝╚╝ ╚═══╝╚══╝", Terminal.Color.GREEN);
         
-        drawString(BUTTON_OFFSET_X, START_GAME, "Новая игра", Terminal.Color.WHITE);
-        drawString(BUTTON_OFFSET_X, PROCEED, "Продолжить", Terminal.Color.BLUE);
-        drawString(BUTTON_OFFSET_X, RATING, "Рейтинг", Terminal.Color.BLUE);
-        drawString(BUTTON_OFFSET_X, EXTT, "Выход", Terminal.Color.BLUE);
+        drawString(BUTTON_OFFSET_X, GameButton.START_GAME.getY(), "Новая игра", Terminal.Color.WHITE);
+        drawString(BUTTON_OFFSET_X, GameButton.PROCEED.getY(), "Продолжить", Terminal.Color.BLUE);
+        drawString(BUTTON_OFFSET_X, GameButton.RATING.getY(), "Рейтинг", Terminal.Color.BLUE);
+        drawString(BUTTON_OFFSET_X, GameButton.EXTT.getY(), "Выход", Terminal.Color.BLUE);
     }
     
     protected void openMainMenu() {
@@ -117,6 +117,13 @@ public class Menu {
         
         refreshScreen();
         
-        handleMainMenu();
+        GameButton selectButton = handleMainMenu();
+        if (selectButton == GameButton.EXTT) {
+            exit();
+        } else {
+            clearScreen();
+            drawString(25, 10, "Тут однажды будет " + selectButton.getName(), Terminal.Color.WHITE);
+            refreshScreen();
+        }
     }
 }
