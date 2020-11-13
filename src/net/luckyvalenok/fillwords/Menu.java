@@ -1,5 +1,6 @@
 package net.luckyvalenok.fillwords;
 
+import com.googlecode.lanterna.input.Key;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.Terminal;
 import com.googlecode.lanterna.terminal.swing.SwingTerminal;
@@ -18,6 +19,8 @@ public class Menu {
     private final int PROCEED = 12;
     private final int RATING = 13;
     private final int EXTT = 14;
+    
+    private boolean isLive;
     
     Menu(int width, int height) {
         terminal = new SwingTerminal(width, height);
@@ -42,8 +45,53 @@ public class Menu {
         screen.refresh();
     }
     
+    private Key readKeyInput() {
+        return terminal.readInput();
+    }
+    
     private void exit() {
+        isLive = false;
         terminal.exitPrivateMode();
+    }
+    
+    private int handleMainMenu() {
+        int selected = START_GAME;
+        Key k;
+        while (isLive) {
+            k = readKeyInput();
+            if (k != null) {
+                switch (k.getKind()) {
+                    case ArrowDown:
+                        if (selected < EXTT)
+                            selected++;
+                        break;
+                    case ArrowUp:
+                        if (selected > START_GAME)
+                            selected--;
+                        break;
+                    case Enter:
+                        return selected;
+                    default:
+                        break;
+                }
+                highlighMainMenuSelectedOption(selected);
+            }
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException ie) {
+                ie.printStackTrace();
+            }
+        }
+        return 0;
+    }
+    
+    private void highlighMainMenuSelectedOption(int selected) {
+        drawString(BUTTON_OFFSET_X, START_GAME, "Новая игра", selected == START_GAME ? Terminal.Color.WHITE : Terminal.Color.BLUE);
+        drawString(BUTTON_OFFSET_X, PROCEED, "Продолжить", selected == PROCEED ? Terminal.Color.WHITE : Terminal.Color.BLUE);
+        drawString(BUTTON_OFFSET_X, RATING, "Рейтинг", selected == RATING ? Terminal.Color.WHITE : Terminal.Color.BLUE);
+        drawString(BUTTON_OFFSET_X, EXTT, "Выход", selected == EXTT ? Terminal.Color.WHITE : Terminal.Color.BLUE);
+        
+        refreshScreen();
     }
     
     private void drawMainMenu() {
@@ -64,8 +112,11 @@ public class Menu {
     }
     
     protected void openMainMenu() {
+        isLive = true;
         drawMainMenu();
         
         refreshScreen();
+        
+        handleMainMenu();
     }
 }
