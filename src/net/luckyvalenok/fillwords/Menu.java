@@ -1,5 +1,9 @@
 package net.luckyvalenok.fillwords;
 
+import com.googlecode.lanterna.gui.GUIScreen;
+import com.googlecode.lanterna.gui.Window;
+import com.googlecode.lanterna.gui.component.Button;
+import com.googlecode.lanterna.gui.component.TextBox;
 import com.googlecode.lanterna.input.Key;
 import com.googlecode.lanterna.screen.Screen;
 import com.googlecode.lanterna.terminal.Terminal;
@@ -13,6 +17,7 @@ public class Menu {
     
     private static SwingTerminal terminal;
     private static Screen screen;
+    private static GUIScreen guiScreen;
     
     private final int BUTTON_OFFSET_X = 30;
     
@@ -31,6 +36,7 @@ public class Menu {
                 exit();
             }
         });
+        guiScreen = new GUIScreen(screen);
     }
     
     private void drawString(int x, int y, String string, Terminal.Color fg_color) {
@@ -111,7 +117,22 @@ public class Menu {
         drawString(BUTTON_OFFSET_X, GameButton.EXTT.getY(), "Выход", Terminal.Color.BLUE);
     }
     
+    private void getPlayerName() {
+        clearScreen();
+        
+        Window playerNameWindow = new Window("Введите свое имя");
+        TextBox textBox = new TextBox(null);
+        playerNameWindow.addComponent(textBox);
+        Button button = new Button("Готово", () -> {
+            System.out.println(textBox.getText());
+            openMainMenu();
+        });
+        playerNameWindow.addComponent(button);
+        guiScreen.showWindow(playerNameWindow, GUIScreen.Position.CENTER);
+    }
+    
     protected void openMainMenu() {
+        clearScreen();
         isLive = true;
         drawMainMenu();
         
@@ -120,6 +141,8 @@ public class Menu {
         GameButton selectButton = handleMainMenu();
         if (selectButton == GameButton.EXTT) {
             exit();
+        } else if (selectButton == GameButton.START_GAME) {
+            getPlayerName();
         } else {
             clearScreen();
             drawString(25, 10, "Тут однажды будет " + selectButton.getName(), Terminal.Color.WHITE);
