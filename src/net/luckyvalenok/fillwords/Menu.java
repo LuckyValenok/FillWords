@@ -121,6 +121,7 @@ public class Menu {
     }
     
     private void getPlayerName() {
+        isLive = false;
         clearScreen();
         
         Window playerNameWindow = new Window("Введите свое имя");
@@ -128,6 +129,7 @@ public class Menu {
         playerNameWindow.addComponent(textBox);
         Button button = new Button("Готово", () -> {
             System.out.println(textBox.getText());
+            playerNameWindow.close();
             openMainMenu();
         });
         playerNameWindow.addComponent(button);
