@@ -5,10 +5,10 @@ import java.util.Map;
 
 public enum GameButton {
     
-    START_GAME(11, "начало игры"),
-    PROCEED(12, "продолжение игры"),
-    RATING(13, "рейтинг"),
-    EXTT(14, null);
+    START_GAME(11, "Новая игра"),
+    PROCEED(12, "Продолжить"),
+    RATING(13, "Рейтинг"),
+    EXTT(14, "Выход");
     
     public static Map<Integer, GameButton> buttons = new HashMap<>();
     

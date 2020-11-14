@@ -19,8 +19,6 @@ public class Menu {
     private static Screen screen;
     private static GUIScreen guiScreen;
     
-    private final int BUTTON_OFFSET_X = 30;
-    
     private boolean isLive;
     
     Menu(int width, int height) {
@@ -30,6 +28,7 @@ public class Menu {
         screen = new Screen(terminal);
         screen.setCursorPosition(null);
         screen.startScreen();
+        terminal.getJFrame().setTitle("FillWords");
         terminal.getJFrame().addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -39,8 +38,12 @@ public class Menu {
         guiScreen = new GUIScreen(screen);
     }
     
-    private void drawString(int x, int y, String string, Terminal.Color fg_color) {
-        screen.putString(x, y, string, fg_color, null);
+    private void drawString(int x, int y, String string, Terminal.Color color) {
+        screen.putString(x, y, string, color, null);
+    }
+    
+    private void drawButton(GameButton button, Terminal.Color color) {
+        drawString(31, button.getY(), button.getName(), color);
     }
     
     private void refreshScreen() {
@@ -92,10 +95,10 @@ public class Menu {
     }
     
     private void drawMainSelOption(GameButton selected) {
-        drawString(BUTTON_OFFSET_X, GameButton.START_GAME.getY(), "Новая игра", selected == GameButton.START_GAME ? Terminal.Color.WHITE : Terminal.Color.BLUE);
-        drawString(BUTTON_OFFSET_X, GameButton.PROCEED.getY(), "Продолжить", selected == GameButton.PROCEED ? Terminal.Color.WHITE : Terminal.Color.BLUE);
-        drawString(BUTTON_OFFSET_X, GameButton.RATING.getY(), "Рейтинг", selected == GameButton.RATING ? Terminal.Color.WHITE : Terminal.Color.BLUE);
-        drawString(BUTTON_OFFSET_X, GameButton.EXTT.getY(), "Выход", selected == GameButton.EXTT ? Terminal.Color.WHITE : Terminal.Color.BLUE);
+        drawButton(GameButton.START_GAME, selected == GameButton.START_GAME ? Terminal.Color.WHITE : Terminal.Color.BLUE);
+        drawButton(GameButton.PROCEED, selected == GameButton.PROCEED ? Terminal.Color.WHITE : Terminal.Color.BLUE);
+        drawButton(GameButton.RATING, selected == GameButton.RATING ? Terminal.Color.WHITE : Terminal.Color.BLUE);
+        drawButton(GameButton.EXTT, selected == GameButton.EXTT ? Terminal.Color.WHITE : Terminal.Color.BLUE);
         
         refreshScreen();
     }
@@ -111,17 +114,17 @@ public class Menu {
         drawString(x, ++y, "║║  ╔╝╚╗║╚═╗║╚═╗║╚╝╚╝║║╚╝║║║║║ ║╚═╝║╔═╝║", Terminal.Color.GREEN);
         drawString(x, ++y, "╚╝  ╚══╝╚══╝╚══╝╚═╝╚═╝╚══╝╚╝╚╝ ╚═══╝╚══╝", Terminal.Color.GREEN);
         
-        drawString(BUTTON_OFFSET_X, GameButton.START_GAME.getY(), "Новая игра", Terminal.Color.WHITE);
-        drawString(BUTTON_OFFSET_X, GameButton.PROCEED.getY(), "Продолжить", Terminal.Color.BLUE);
-        drawString(BUTTON_OFFSET_X, GameButton.RATING.getY(), "Рейтинг", Terminal.Color.BLUE);
-        drawString(BUTTON_OFFSET_X, GameButton.EXTT.getY(), "Выход", Terminal.Color.BLUE);
+        drawButton(GameButton.START_GAME, Terminal.Color.WHITE);
+        drawButton(GameButton.PROCEED, Terminal.Color.BLUE);
+        drawButton(GameButton.RATING, Terminal.Color.BLUE);
+        drawButton(GameButton.EXTT, Terminal.Color.BLUE);
     }
     
     private void getPlayerName() {
         clearScreen();
         
         Window playerNameWindow = new Window("Введите свое имя");
-        TextBox textBox = new TextBox(null);
+        TextBox textBox = new TextBox(null, 16);
         playerNameWindow.addComponent(textBox);
         Button button = new Button("Готово", () -> {
             System.out.println(textBox.getText());
@@ -132,8 +135,8 @@ public class Menu {
     }
     
     protected void openMainMenu() {
-        clearScreen();
         isLive = true;
+        clearScreen();
         drawMainMenu();
         
         refreshScreen();
