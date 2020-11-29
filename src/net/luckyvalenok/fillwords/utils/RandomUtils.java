@@ -1,5 +1,6 @@
-package net.luckyvalenok.fillwords;
+package net.luckyvalenok.fillwords.utils;
 
+import java.util.List;
 import java.util.Random;
 
 public class RandomUtils {
@@ -15,6 +16,28 @@ public class RandomUtils {
     @SafeVarargs
     public static <T> T of(T... args) {
         return args[nextInt(args.length)];
+    }
+    
+    @Deprecated
+    @SafeVarargs
+    public static <T> T of(List<T>... lists) {
+        return flatOf(lists);
+    }
+    
+    @SafeVarargs
+    public static <T> T flatOf(List<T>... lists) {
+        int var = 0;
+        for (List<T> l : lists)
+            var += l.size();
+        var = nextInt(var);
+        for (List<T> l : lists) {
+            if (var >= l.size()) {
+                var -= l.size();
+            } else {
+                return l.get(var);
+            }
+        }
+        throw new IllegalArgumentException("Received lists is empty");
     }
     
     public static int nextInt(int i) {

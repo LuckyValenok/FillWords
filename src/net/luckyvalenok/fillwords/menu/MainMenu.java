@@ -1,61 +1,20 @@
-package net.luckyvalenok.fillwords;
+package net.luckyvalenok.fillwords.menu;
 
 import com.googlecode.lanterna.SGR;
-import com.googlecode.lanterna.TerminalSize;
 import com.googlecode.lanterna.TextColor;
-import com.googlecode.lanterna.graphics.TextGraphics;
-import com.googlecode.lanterna.gui2.MultiWindowTextGUI;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
-import com.googlecode.lanterna.screen.Screen;
-import com.googlecode.lanterna.screen.TerminalScreen;
-import com.googlecode.lanterna.terminal.DefaultTerminalFactory;
-import com.googlecode.lanterna.terminal.Terminal;
 
 import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class MainMenu {
+public class MainMenu extends GameMenu {
     
-    private final Terminal terminal;
-    private final TextGraphics graphics;
-    private final MultiWindowTextGUI gui;
     private Timer timer;
     
-    MainMenu(int width, int height) throws IOException {
-        DefaultTerminalFactory defaultTerminalFactory = new DefaultTerminalFactory();
-        defaultTerminalFactory.setInitialTerminalSize(new TerminalSize(width, height));
-        defaultTerminalFactory.setTerminalEmulatorTitle("FillWords");
-        terminal = defaultTerminalFactory.createTerminal();
-        
-        graphics = terminal.newTextGraphics();
-        
-        Screen screen = new TerminalScreen(terminal);
-        screen.setCursorPosition(null);
-        screen.startScreen();
-        
-        gui = new MultiWindowTextGUI(screen,  TextColor.ANSI.BLACK);
-    }
-    
-    public void drawString(int x, int y, String string, SGR srg) {
-        graphics.putString(x, y, string, srg);
-    }
-    
-    public void drawButton(GameButton button, GameButton selected) {
-        graphics.setForegroundColor(TextColor.ANSI.WHITE);
-        if (selected == button) {
-            graphics.setForegroundColor(TextColor.ANSI.GREEN);
-        }
-        drawString(30, button.getY(), button.getName(), SGR.BOLD);
-    }
-    
-    public void refreshScreen() throws IOException {
-        terminal.flush();
-    }
-    
-    public void clearScreen() throws IOException {
-        terminal.clearScreen();
+    public MainMenu(int width, int height) throws IOException {
+        super(width, height);
     }
     
     private void drawMainSelOption(GameButton selected) throws IOException {
@@ -67,22 +26,17 @@ public class MainMenu {
         refreshScreen();
     }
     
-    private void drawMainMenu() throws IOException {
+    protected void draw() throws IOException {
         drawMainSelOption(GameButton.START_GAME);
-    
+        getTerminal().flush();
+        
         timer = new Timer();
         timer.schedule(new InfoUpdater(), 0, 200);
-        terminal.flush();
     }
     
-    protected void openMainMenu() throws IOException {
-        clearScreen();
-        drawMainMenu();
-        
-        refreshScreen();
-        
+    protected void onKeyInput() throws IOException {
         int selected = GameButton.START_GAME.getY();
-        KeyStroke key = terminal.readInput();
+        KeyStroke key = getTerminal().readInput();
         while (key.getKeyType() != KeyType.EOF && key.getKeyType() != KeyType.Escape) {
             switch (key.getKeyType()) {
                 case ArrowDown:
@@ -100,17 +54,9 @@ public class MainMenu {
                     return;
             }
             drawMainSelOption(GameButton.getButton(selected));
-            key = terminal.readInput();
+            key = getTerminal().readInput();
         }
-        terminal.close();
-    }
-    
-    public Terminal getTerminal() {
-        return terminal;
-    }
-    
-    public MultiWindowTextGUI getGui() {
-        return gui;
+        getTerminal().close();
     }
     
     private class InfoUpdater extends TimerTask {
@@ -128,8 +74,8 @@ public class MainMenu {
                 drawInfo(++y, "║╔═╝ ║║ ║║  ║║  ║║║║║║║║║║║╔╗╔╝║║ ║║╚═╗║", colors[(3 + offset) % 6]);
                 drawInfo(++y, "║║  ╔╝╚╗║╚═╗║╚═╗║╚╝╚╝║║╚╝║║║║║ ║╚═╝║╔═╝║", colors[(4 + offset) % 6]);
                 drawInfo(++y, "╚╝  ╚══╝╚══╝╚══╝╚═╝╚═╝╚══╝╚╝╚╝ ╚═══╝╚══╝", colors[(5 + offset) % 6]);
-                graphics.setForegroundColor(TextColor.ANSI.WHITE);
-                terminal.flush();
+                getGraphics().setForegroundColor(TextColor.ANSI.WHITE);
+                getTerminal().flush();
                 offset++;
             } catch (IOException e) {
                 e.printStackTrace();
@@ -137,7 +83,7 @@ public class MainMenu {
         }
         
         private void drawInfo(int y, String string, TextColor color) {
-            graphics.setForegroundColor(color);
+            getGraphics().setForegroundColor(color);
             drawString(20, y, string, SGR.BOLD);
         }
     }

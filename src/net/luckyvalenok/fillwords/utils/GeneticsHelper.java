@@ -1,4 +1,7 @@
-package net.luckyvalenok.fillwords;
+package net.luckyvalenok.fillwords.utils;
+
+import net.luckyvalenok.fillwords.enums.Direction;
+import net.luckyvalenok.fillwords.objects.Position;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -26,7 +29,7 @@ public class GeneticsHelper {
     public int[][] evolve(int length) {
         this.length = length;
         init();
-        for (int i = 0; i < RandomUtils.intRange(2, 20); i++) {
+        for (int i = 0; i < RandomUtils.intRange(3, 10); i++) {
             for (int anInt : wordsPlaceHolders.keySet().toArray(new Integer[0])) {
                 tryGrow(anInt);
             }
@@ -45,7 +48,7 @@ public class GeneticsHelper {
         Position head = worm.get(0);
         Position tail = worm.get(worm.size() - 1);
         
-        List<Directions> possibleDirection = getDirections(tail, index);
+        List<Direction> possibleDirection = getDirections(tail, index);
         if (possibleDirection.size() != 0) {
             grow(index, possibleDirection, tail);
             return;
@@ -60,8 +63,8 @@ public class GeneticsHelper {
         }
     }
     
-    private void grow(int index, List<Directions> possibleDirection, Position tail) {
-        Directions direct = possibleDirection.get(RandomUtils.intRange(0, possibleDirection.size() - 1));
+    private void grow(int index, List<Direction> possibleDirection, Position tail) {
+        Direction direct = possibleDirection.get(RandomUtils.intRange(0, possibleDirection.size() - 1));
         Position otherPoint;
         switch (direct) {
             case LEFT:
@@ -100,19 +103,19 @@ public class GeneticsHelper {
         wordsPlaceHolders.remove(key);
     }
     
-    private List<Directions> getDirections(Position point, int i) {
-        List<Directions> possibleDirection = new ArrayList<>();
+    private List<Direction> getDirections(Position point, int i) {
+        List<Direction> possibleDirection = new ArrayList<>();
         if (point.y > 0 && matrix[point.x][point.y - 1] != i && isHead(new Position(point.x, point.y - 1))) {
-            possibleDirection.add(Directions.LEFT);
+            possibleDirection.add(Direction.LEFT);
         }
         if (point.y < rows - 1 && matrix[point.x][point.y + 1] != i && isHead(new Position(point.x, point.y + 1))) {
-            possibleDirection.add(Directions.RIGHT);
+            possibleDirection.add(Direction.RIGHT);
         }
         if (point.x > 0 && matrix[point.x - 1][point.y] != i && isHead(new Position(point.x - 1, point.y))) {
-            possibleDirection.add(Directions.TOP);
+            possibleDirection.add(Direction.TOP);
         }
         if (point.x < columns - 1 && matrix[point.x + 1][point.y] != i && isHead(new Position(point.x + 1, point.y))) {
-            possibleDirection.add(Directions.BOTTOM);
+            possibleDirection.add(Direction.BOTTOM);
         }
         
         return possibleDirection;
