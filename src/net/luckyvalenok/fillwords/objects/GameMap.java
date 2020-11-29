@@ -1,27 +1,30 @@
-package net.luckyvalenok.fillwords;
+package net.luckyvalenok.fillwords.objects;
+
+import net.luckyvalenok.fillwords.utils.GeneticsHelper;
+import net.luckyvalenok.fillwords.utils.RandomUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class GameMap {
     
-    private final String[] allWords;
+    private final List<String> allWords;
     private final int columns;
     private final int rows;
     private final List<String> words = new ArrayList<>();
     private final char[][] board;
-    private final Map<String, List<Position>> wordPoints = new HashMap<>();
+    private final Map<String, Map<Integer, Position>> wordPoints = new HashMap<>();
     
-    public GameMap(String[] allWords, int maxLengthWord, int columns, int rows) {
+    public GameMap(List<String> allWords, int maxLengthWord, int columns, int rows) {
         this.allWords = allWords;
         this.columns = columns;
         this.rows = rows;
         
         board = new char[rows][columns];
         generateBoard(maxLengthWord);
-        
     }
     
     public void generateBoard(int maxLengthWord) {
@@ -33,7 +36,7 @@ public class GameMap {
             String word = getWord(entry.getValue().size());
             wordsMap.put(entry.getKey(), word);
             words.add(word);
-            wordPoints.put(word, entry.getValue());
+            wordPoints.put(word, new TreeMap<>());
         }
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < columns; j++) {
@@ -42,6 +45,7 @@ public class GameMap {
                 while (!dic.get(index).get(o).equals(new Position(i, j))) {
                     o++;
                 }
+                wordPoints.get(wordsMap.get(index)).put(o, new Position(i, j));
                 board[i][j] = wordsMap.get(index).charAt(o);
             }
         }
@@ -55,8 +59,16 @@ public class GameMap {
         return board;
     }
     
-    public Map<String, List<Position>> getWordPoints() {
+    public Map<String, Map<Integer, Position>> getWordPoints() {
         return wordPoints;
+    }
+    
+    public int getColumns() {
+        return columns;
+    }
+    
+    public int getRows() {
+        return rows;
     }
     
     private String getWord(int length) {

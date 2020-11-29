@@ -1,4 +1,4 @@
-package net.luckyvalenok.fillwords;
+package net.luckyvalenok.fillwords.menu;
 
 import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TerminalSize;
@@ -8,6 +8,8 @@ import com.googlecode.lanterna.gui2.GridLayout;
 import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.gui2.TextBox;
 import com.googlecode.lanterna.gui2.Window;
+import net.luckyvalenok.fillwords.Game;
+import net.luckyvalenok.fillwords.objects.GameMap;
 
 import java.io.IOException;
 import java.util.Collections;
@@ -25,8 +27,11 @@ public enum GameButton {
         contentPanel.addComponent(textBox);
         Button button = new Button("Готово", () -> {
             System.out.println(textBox.getText());
+            playerNameWindow.close();
             try {
+                GameMap gameMap = new GameMap(Game.allWords, Game.maxLengthWord, 5, 5);
                 terminal.getTerminal().close();
+                new InGameMenu(gameMap).open();
             } catch (IOException e) {
                 e.printStackTrace();
             }
