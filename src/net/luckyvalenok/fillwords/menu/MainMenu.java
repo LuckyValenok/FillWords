@@ -21,6 +21,7 @@ public class MainMenu extends GameMenu {
         drawButton(GameButton.START_GAME, selected);
         drawButton(GameButton.PROCEED, selected);
         drawButton(GameButton.RATING, selected);
+        drawButton(GameButton.SETTINGS, selected);
         drawButton(GameButton.EXTT, selected);
         
         refreshScreen();

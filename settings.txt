@@ -1,0 +1,7 @@
+sizeMap;5
+sizeCell;3
+selectCellColor;BLUE
+selectWordColor;RED
+solvedWordColor;GREEN;
+colorMap;GREEN
+randomColor;false
