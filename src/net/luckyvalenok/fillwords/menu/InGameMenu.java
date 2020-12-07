@@ -37,6 +37,8 @@ public class InGameMenu extends GameMenu {
         this.map = map;
         this.name = name;
         getTerminal().setCursorVisible(false);
+        
+        System.out.println(map.getWords().toString());
     }
     
     @Override
@@ -159,7 +161,7 @@ public class InGameMenu extends GameMenu {
             getGraphics().putString(getRelative(0, map.getRows() * (widthCell + 1) + 1), "Попробуйте выделить это слово по-другому");
         } else {
             state = State.SEARCH;
-            TextColor.ANSI color = Settings.randomColor ? RandomUtils.ofSafe(new TextColor.ANSI[] {Settings.colorMap, TextColor.ANSI.DEFAULT}, TextColor.ANSI.values()) : Settings.solvedWordColor;
+            TextColor.ANSI color = Settings.randomColor ? RandomUtils.ofSafe(new TextColor.ANSI[] {Settings.colorMap, TextColor.ANSI.DEFAULT, TextColor.ANSI.WHITE}, TextColor.ANSI.values()) : Settings.solvedWordColor;
             for (Position position : selected) {
                 solved.put(position, color);
             }

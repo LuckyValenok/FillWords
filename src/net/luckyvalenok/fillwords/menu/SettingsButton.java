@@ -12,10 +12,10 @@ public enum SettingsButton {
     
     SIZE_MAP(7, "Размер карты", "sizeMap", null, new Object[]{2, 30}),
     SIZE_CELL(8, "Размер ячейки", "sizeCell", null, new Object[]{1, 4}),
-    COLOR_MAP(9, "Цвет карты", "colorMap", null, TextColor.ANSI.values()),
-    SELECT_CELL_COLOR(10, "Цвет выделенной ячейки", "selectCellColor", null, TextColor.ANSI.values()),
-    SELECT_WORD_COLOR(11, "Цвет выделенного слова", "selectWordColor", null, TextColor.ANSI.values()),
-    SOLVED_WORD_COLOR(12, "Цвет разгаданного слова", "solvedWordColor", null, TextColor.ANSI.values()),
+    COLOR_MAP(9, "Цвет карты", "colorMap", null, new TextColor.ANSI[]{TextColor.ANSI.BLACK, TextColor.ANSI.RED, TextColor.ANSI.GREEN, TextColor.ANSI.YELLOW, TextColor.ANSI.BLUE, TextColor.ANSI.MAGENTA, TextColor.ANSI.CYAN}),
+    SELECT_CELL_COLOR(10, "Цвет выделенной ячейки", "selectCellColor", null, new TextColor.ANSI[]{TextColor.ANSI.BLACK, TextColor.ANSI.RED, TextColor.ANSI.GREEN, TextColor.ANSI.YELLOW, TextColor.ANSI.BLUE, TextColor.ANSI.MAGENTA, TextColor.ANSI.CYAN}),
+    SELECT_WORD_COLOR(11, "Цвет выделенного слова", "selectWordColor", null, new TextColor.ANSI[]{TextColor.ANSI.BLACK, TextColor.ANSI.RED, TextColor.ANSI.GREEN, TextColor.ANSI.YELLOW, TextColor.ANSI.BLUE, TextColor.ANSI.MAGENTA, TextColor.ANSI.CYAN}),
+    SOLVED_WORD_COLOR(12, "Цвет разгаданного слова", "solvedWordColor", null, new TextColor.ANSI[]{TextColor.ANSI.BLACK, TextColor.ANSI.RED, TextColor.ANSI.GREEN, TextColor.ANSI.YELLOW, TextColor.ANSI.BLUE, TextColor.ANSI.MAGENTA, TextColor.ANSI.CYAN}),
     RANDOM_COLOR(13, "Рандомный цвет разгаданного слова", "randomColor", null, null),
     BACK(14, "Вернуться и сохранить", null, menu -> {
         try {

@@ -1,6 +1,6 @@
 sizeMap;6
 sizeCell;1
-colorMap;GREEN
+colorMap;MAGENTA
 selectCellColor;BLUE
 selectWordColor;RED
 solvedWordColor;GREEN
