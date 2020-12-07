@@ -5,32 +5,40 @@ import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.input.KeyStroke;
 import com.googlecode.lanterna.input.KeyType;
 import net.luckyvalenok.fillwords.Game;
+import net.luckyvalenok.fillwords.Settings;
+import net.luckyvalenok.fillwords.enums.State;
 import net.luckyvalenok.fillwords.objects.GameMap;
 import net.luckyvalenok.fillwords.objects.Position;
-import net.luckyvalenok.fillwords.enums.State;
+import net.luckyvalenok.fillwords.utils.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class InGameMenu extends GameMenu {
     
     private static final TerminalPosition START_POSITION = new TerminalPosition(6, 4);
     private final GameMap map;
-    private final List<Position> solved = new ArrayList<>();
+    private final String name;
+    private final Map<Position, TextColor.ANSI> solved = new HashMap<>();
     private final List<Position> selected = new ArrayList<>();
-    private final int widthCell = 3;
-    int score = 0;
+    private final int widthCell = Settings.sizeCell;
+    private int score = 0;
     private State state = State.SEARCH;
     private Position currentPosition = new Position(0, 0);
     private String selectedWord = "";
     
-    public InGameMenu(GameMap map) throws IOException {
+    public InGameMenu(GameMap map, String name) throws IOException {
         super(100, 50);
         
         this.map = map;
+        this.name = name;
         getTerminal().setCursorVisible(false);
+        
+        System.out.println(map.getWords().toString());
     }
     
     @Override
@@ -52,7 +60,7 @@ public class InGameMenu extends GameMenu {
                     moveCursor(0, 1);
                     break;
                 case Enter:
-                    if (state == State.SEARCH && !solved.contains(currentPosition)) {
+                    if (state == State.SEARCH && !solved.containsKey(currentPosition)) {
                         state = State.SELECT;
                         selectedWord += map.getBoard()[currentPosition.x][currentPosition.y];
                         selected.add(currentPosition);
@@ -75,6 +83,9 @@ public class InGameMenu extends GameMenu {
                     break;
             }
         } while (keyStroke.getKeyType() != KeyType.EOF && !map.getWords().isEmpty());
+        int allScore = Game.dataManager.getScore().getOrDefault(name, 0);
+        Game.dataManager.getScore().put(name, allScore + score);
+        Game.dataManager.sortScore();
     }
     
     private TerminalPosition getRelative(int i, int j) {
@@ -84,11 +95,13 @@ public class InGameMenu extends GameMenu {
     @Override
     void draw() throws IOException {
         clearScreen();
+        getGraphics().setBackgroundColor(TextColor.ANSI.BLACK);
         getGraphics().putString(0, 0, "Очков: " + score);
         if (!selectedWord.isEmpty()) {
             getGraphics().putString(0, 1, "Выделенное слово: " + selectedWord);
         }
         char[][] board = map.getBoard();
+        getGraphics().setBackgroundColor(Settings.colorMap);
         getGraphics().putString(getRelative(0, -1), getLine('┌', '┐', '┬'));
         int centerCell = widthCell / 2;
         for (int i = 0; i < map.getRows() * (widthCell + 1); i++) {
@@ -96,24 +109,24 @@ public class InGameMenu extends GameMenu {
                 Position position = new Position(i / (widthCell + 1), j);
                 boolean isCurrentPosition = currentPosition.equals(position);
                 boolean isSelected = selected.contains(position);
-                boolean isSolved = solved.contains(position);
+                boolean isSolved = solved.containsKey(position);
                 for (int k = 0; k < widthCell; k++) {
                     getGraphics().putString(getRelative(j * widthCell + j, i + k), "│");
                     if (isSelected) {
-                        getGraphics().setBackgroundColor(TextColor.ANSI.RED);
+                        getGraphics().setBackgroundColor(Settings.selectWordColor);
                     }
                     if (isCurrentPosition) {
-                        getGraphics().setBackgroundColor(TextColor.ANSI.BLUE);
+                        getGraphics().setBackgroundColor(Settings.selectCellColor);
                     }
                     if (isSolved) {
-                        getGraphics().setBackgroundColor(TextColor.ANSI.GREEN);
+                        getGraphics().setBackgroundColor(solved.get(position));
                     }
                     if (centerCell == k) {
                         getGraphics().putString(getRelative(j * widthCell + j + 1, i + k), StringUtils.center(board[i / (widthCell + 1)][j] + "", widthCell));
                     } else {
                         getGraphics().putString(getRelative(j * widthCell + j + 1, i + k), StringUtils.center(" ", widthCell));
                     }
-                    getGraphics().setBackgroundColor(TextColor.ANSI.BLACK);
+                    getGraphics().setBackgroundColor(Settings.colorMap);
                     getGraphics().putString(getRelative(j * widthCell + j + widthCell + 1, i + k), "│");
                 }
             }
@@ -121,6 +134,7 @@ public class InGameMenu extends GameMenu {
             getGraphics().putString(getRelative(0, i), getLine('├', '┤', '┼'));
         }
         getGraphics().putString(getRelative(0, map.getRows() * (widthCell + 1) - 1), getLine('└', '┘', '┴'));
+        getGraphics().setBackgroundColor(TextColor.ANSI.BLACK);
         getTerminal().flush();
     }
     
@@ -139,7 +153,7 @@ public class InGameMenu extends GameMenu {
     }
     
     private void processReply(String selectedWord) throws IOException {
-        if (!Game.allWords.contains(selectedWord)) {
+        if (!Game.dataManager.getAllWords().contains(selectedWord)) {
             getGraphics().putString(getRelative(0, map.getRows() * (widthCell + 1) + 1), "Данного слова нет в словаре");
         } else if (!checkWord()) {
             getGraphics().putString(getRelative(0, map.getRows() * (widthCell + 1) + 1), "Данное слово не загадано на этом уровне");
@@ -147,7 +161,10 @@ public class InGameMenu extends GameMenu {
             getGraphics().putString(getRelative(0, map.getRows() * (widthCell + 1) + 1), "Попробуйте выделить это слово по-другому");
         } else {
             state = State.SEARCH;
-            solved.addAll(selected);
+            TextColor.ANSI color = Settings.randomColor ? RandomUtils.ofSafe(new TextColor.ANSI[] {Settings.colorMap, TextColor.ANSI.DEFAULT, TextColor.ANSI.WHITE}, TextColor.ANSI.values()) : Settings.solvedWordColor;
+            for (Position position : selected) {
+                solved.put(position, color);
+            }
             selected.clear();
             score += selectedWord.length();
             this.selectedWord = "";
@@ -163,7 +180,7 @@ public class InGameMenu extends GameMenu {
             return;
         currentPosition = new Position(x + dx, y + dy);
         if (state == State.SELECT) {
-            if (!selected.contains(currentPosition) && !solved.contains(currentPosition)) {
+            if (!selected.contains(currentPosition) && !solved.containsKey(currentPosition)) {
                 selectedWord += map.getBoard()[currentPosition.x][currentPosition.y];
                 selected.add(currentPosition);
             }

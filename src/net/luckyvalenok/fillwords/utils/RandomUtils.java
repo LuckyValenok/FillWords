@@ -1,5 +1,6 @@
 package net.luckyvalenok.fillwords.utils;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -16,6 +17,15 @@ public class RandomUtils {
     @SafeVarargs
     public static <T> T of(T... args) {
         return args[nextInt(args.length)];
+    }
+    
+    @SafeVarargs
+    public static <T> T ofSafe(T[] safe, T... args) {
+        T t = args[nextInt(args.length)];
+        if (Arrays.stream(safe).anyMatch(t1 -> t == t1)) {
+            return ofSafe(safe, args);
+        }
+        return t;
     }
     
     @Deprecated
