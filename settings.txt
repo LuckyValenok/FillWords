@@ -1,7 +1,7 @@
-sizeMap;26
+sizeMap;6
 sizeCell;1
-colorMap;RED
+colorMap;GREEN
 selectCellColor;BLUE
-selectWordColor;BLACK
+selectWordColor;RED
 solvedWordColor;GREEN
-randomColor;false
+randomColor;true
