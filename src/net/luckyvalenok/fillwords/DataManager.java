@@ -1,12 +1,11 @@
 package net.luckyvalenok.fillwords;
 
-import com.googlecode.lanterna.TextColor;
+import net.luckyvalenok.fillwords.menu.SettingsButton;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -36,11 +35,11 @@ public class DataManager {
             score.put(parts[0], Integer.parseInt(parts[1]));
         }
         reader.close();
-    
+        
         reader = new BufferedReader(new FileReader("settings.txt"));
         while ((line = reader.readLine()) != null) {
             String[] parts = line.split(";");
-            set(Settings.class, parts[0], parts[1]);
+            Settings.set(parts[0], parts[1]);
         }
         reader.close();
     }
@@ -68,31 +67,14 @@ public class DataManager {
         fileWriter.close();
     }
     
-    /**
-     * Устанавливает новое значение статическому полю класса
-     *
-     * @param clazz класс
-     * @param field имя поля
-     * @param value новое значение
-     */
-    public static void set(Class clazz, String field, Object value) {
-        try {
-            Field field1 = clazz.getDeclaredField(field);
-            System.out.println(field1.getType().getName());
-            switch (field1.getType().getName()) {
-                case "int":
-                    value = Integer.parseInt((String) value);
-                    break;
-                case "com.googlecode.lanterna.TextColor$ANSI":
-                    value = TextColor.ANSI.valueOf((String) value);
-                    break;
-                case "boolean":
-                    value = Boolean.valueOf((String) value);
-                    break;
+    public void saveSettings() throws IOException {
+        FileWriter fileWriter = new FileWriter("settings.txt");
+        for (SettingsButton button : SettingsButton.values()) {
+            if (button == SettingsButton.BACK) {
+                continue;
             }
-            clazz.getDeclaredField(field).set(null, value);
-        } catch (Exception e) {
-            e.printStackTrace();
+            fileWriter.write(button.getField() + ";" + button.getValue() + "\n");
         }
+        fileWriter.close();
     }
 }

@@ -34,8 +34,6 @@ public class InGameMenu extends GameMenu {
         this.map = map;
         this.name = name;
         getTerminal().setCursorVisible(false);
-        
-        System.out.println(map.getWords().toString());
     }
     
     @Override
@@ -131,6 +129,7 @@ public class InGameMenu extends GameMenu {
             getGraphics().putString(getRelative(0, i), getLine('├', '┤', '┼'));
         }
         getGraphics().putString(getRelative(0, map.getRows() * (widthCell + 1) - 1), getLine('└', '┘', '┴'));
+        getGraphics().setBackgroundColor(TextColor.ANSI.BLACK);
         getTerminal().flush();
     }
     

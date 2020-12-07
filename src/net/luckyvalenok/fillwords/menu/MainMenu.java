@@ -17,18 +17,18 @@ public class MainMenu extends GameMenu {
         super(width, height);
     }
     
-    private void drawMainSelOption(GameButton selected) throws IOException {
-        drawButton(GameButton.START_GAME, selected);
-        drawButton(GameButton.PROCEED, selected);
-        drawButton(GameButton.RATING, selected);
-        drawButton(GameButton.SETTINGS, selected);
-        drawButton(GameButton.EXTT, selected);
+    private void drawMainSelOption(MainButton selected) throws IOException {
+        drawButton(MainButton.START_GAME, selected);
+        drawButton(MainButton.PROCEED, selected);
+        drawButton(MainButton.RATING, selected);
+        drawButton(MainButton.SETTINGS, selected);
+        drawButton(MainButton.EXTT, selected);
         
         refreshScreen();
     }
     
     protected void draw() throws IOException {
-        drawMainSelOption(GameButton.START_GAME);
+        drawMainSelOption(MainButton.START_GAME);
         getTerminal().flush();
         
         timer = new Timer();
@@ -36,25 +36,25 @@ public class MainMenu extends GameMenu {
     }
     
     protected void onKeyInput() throws IOException {
-        int selected = GameButton.START_GAME.getY();
+        int selected = MainButton.START_GAME.getY();
         KeyStroke key = getTerminal().readInput();
         while (key.getKeyType() != KeyType.EOF && key.getKeyType() != KeyType.Escape) {
             switch (key.getKeyType()) {
                 case ArrowDown:
-                    if (selected < GameButton.EXTT.getY())
+                    if (selected < MainButton.EXTT.getY())
                         selected++;
                     break;
                 case ArrowUp:
-                    if (selected > GameButton.START_GAME.getY())
+                    if (selected > MainButton.START_GAME.getY())
                         selected--;
                     break;
                 case Enter:
                     timer.cancel();
                     clearScreen();
-                    GameButton.getButton(selected).getTerminalConsumer().accept(this);
+                    MainButton.getButton(selected).getTerminalConsumer().accept(this);
                     return;
             }
-            drawMainSelOption(GameButton.getButton(selected));
+            drawMainSelOption(MainButton.getButton(selected));
             key = getTerminal().readInput();
         }
         getTerminal().close();

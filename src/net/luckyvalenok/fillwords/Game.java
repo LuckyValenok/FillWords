@@ -6,8 +6,6 @@ import java.io.IOException;
 
 public class Game {
     
-    private final static int LARGE_WIDTH = 80;
-    private final static int LARGE_HEIGHT = 23;
     public static DataManager dataManager;
     
     static {
@@ -19,6 +17,6 @@ public class Game {
     }
     
     public static void main(String[] args) throws IOException {
-        new MainMenu(LARGE_WIDTH, LARGE_HEIGHT).open();
+        new MainMenu(80, 23).open();
     }
 }

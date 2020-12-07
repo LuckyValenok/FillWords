@@ -21,7 +21,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-public enum GameButton {
+public enum MainButton {
     
     START_GAME(11, "Новая игра", menu -> {
         Window playerNameWindow = new BasicWindow("Введите свое имя");
@@ -57,7 +57,7 @@ public enum GameButton {
             menu.getGraphics().setBackgroundColor(TextColor.ANSI.GREEN);
             menu.drawString(25, 5, "Рейтинг", SGR.BOLD);
             menu.getGraphics().setBackgroundColor(TextColor.ANSI.BLACK);
-    
+            
             List<Map.Entry<String, Integer>> collect = Game.dataManager.getScore().entrySet().stream()
                 .sorted((e1, e2) -> -e1.getValue().compareTo(e2.getValue()))
                 .collect(Collectors.toList());
@@ -74,8 +74,7 @@ public enum GameButton {
     }),
     SETTINGS(14, "Настройки", menu -> {
         try {
-            menu.drawString(25, 10, "Тут однажды будет Настройки", SGR.BOLD);
-            menu.refreshScreen();
+            new SettingsMenu(menu).open();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -88,25 +87,25 @@ public enum GameButton {
         }
     });
     
-    public static Map<Integer, GameButton> buttons = new HashMap<>();
+    public static Map<Integer, MainButton> buttons = new HashMap<>();
     
     static {
-        for (GameButton button : values()) {
+        for (MainButton button : values()) {
             buttons.put(button.getY(), button);
         }
     }
     
     private final int y;
     private final String name;
-    private final Consumer<MainMenu> terminalConsumer;
+    private final Consumer<GameMenu> terminalConsumer;
     
-    GameButton(int y, String name, Consumer<MainMenu> terminalConsumer) {
+    MainButton(int y, String name, Consumer<GameMenu> terminalConsumer) {
         this.y = y;
         this.name = name;
         this.terminalConsumer = terminalConsumer;
     }
     
-    public static GameButton getButton(int y) {
+    public static MainButton getButton(int y) {
         return buttons.get(y);
     }
     
@@ -118,7 +117,7 @@ public enum GameButton {
         return y;
     }
     
-    public Consumer<MainMenu> getTerminalConsumer() {
+    public Consumer<GameMenu> getTerminalConsumer() {
         return terminalConsumer;
     }
 }

@@ -85,7 +85,7 @@ public abstract class GameMenu {
         getGraphics().putString(x, y, string, srg);
     }
     
-    public void drawButton(GameButton button, GameButton selected) {
+    public void drawButton(MainButton button, MainButton selected) {
         getGraphics().setForegroundColor(TextColor.ANSI.WHITE);
         if (selected == button) {
             getGraphics().setForegroundColor(TextColor.ANSI.GREEN);
