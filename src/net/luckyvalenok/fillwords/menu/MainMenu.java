@@ -17,6 +17,10 @@ public class MainMenu extends GameMenu {
         super(width, height);
     }
     
+    public MainMenu(GameMenu menu) {
+        super(menu);
+    }
+    
     private void drawMainSelOption(MainButton selected) throws IOException {
         drawButton(MainButton.START_GAME, selected);
         drawButton(MainButton.PROCEED, selected);

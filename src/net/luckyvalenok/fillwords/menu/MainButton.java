@@ -9,6 +9,7 @@ import com.googlecode.lanterna.gui2.GridLayout;
 import com.googlecode.lanterna.gui2.Panel;
 import com.googlecode.lanterna.gui2.TextBox;
 import com.googlecode.lanterna.gui2.Window;
+import com.googlecode.lanterna.input.KeyType;
 import net.luckyvalenok.fillwords.Game;
 import net.luckyvalenok.fillwords.Settings;
 import net.luckyvalenok.fillwords.objects.GameMap;
@@ -33,9 +34,8 @@ public enum MainButton {
             String name = textBox.getText();
             playerNameWindow.close();
             try {
-                GameMap gameMap = new GameMap(Game.dataManager.getAllWords(), Game.dataManager.getMaxLengthWord(), Settings.sizeMap, Settings.sizeMap);
-                menu.getTerminal().close();
-                new InGameMenu(gameMap, name).open();
+                GameMap gameMap = new GameMap(Settings.sizeMap, Settings.sizeMap);
+                new InGameMenu(menu, gameMap, name).open();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -46,8 +46,17 @@ public enum MainButton {
     }),
     PROCEED(12, "Продолжить", menu -> {
         try {
-            menu.drawString(25, 10, "Тут однажды будет Продолжить", SGR.BOLD);
-            menu.refreshScreen();
+            InGameMenu inGameMenu = Game.dataManager.loadGame(menu);
+            if (inGameMenu == null) {
+                menu.drawString(12, 7, "Нет игры, которую можно продолжить", SGR.BOLD);
+                menu.drawString(12, 9, "Нажмите ESC, чтобы вернуться в главное меню", SGR.BOLD);
+                menu.refreshScreen();
+                while (menu.getTerminal().readInput().getKeyType() != KeyType.Escape);
+                menu.clearScreen();
+                new MainMenu(menu).open();
+            } else {
+                inGameMenu.open();
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -67,7 +76,14 @@ public enum MainButton {
                 menu.drawString(20, 6 + i, i + ". " + entry.getKey() + " " + entry.getValue() + " очков", SGR.BOLD);
                 i++;
             }
+            if (i == 1) {
+                menu.drawString(12, 7, "Тут пока что пусто, но скоро кто-то вырвется в топ", SGR.BOLD);
+            }
+            menu.drawString(12, 8 + i, "Нажмите ESC, чтобы вернуться в главное меню", SGR.BOLD);
             menu.refreshScreen();
+            while (menu.getTerminal().readInput().getKeyType() != KeyType.Escape);
+            menu.clearScreen();
+            new MainMenu(menu).open();
         } catch (IOException e) {
             e.printStackTrace();
         }

@@ -19,7 +19,7 @@ public enum SettingsButton {
     RANDOM_COLOR(13, "Рандомный цвет разгаданного слова", "randomColor", null, null),
     BACK(14, "Вернуться и сохранить", null, menu -> {
         try {
-            new MainMenu(80, 23).open();
+            new MainMenu(menu).open();
         } catch (IOException e) {
             e.printStackTrace();
         }

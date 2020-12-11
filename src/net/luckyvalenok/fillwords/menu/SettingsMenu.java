@@ -37,7 +37,6 @@ public class SettingsMenu extends GameMenu {
                     SettingsButton button = SettingsButton.getButton(selected);
                     if (button == SettingsButton.BACK) {
                         Game.dataManager.saveSettings();
-                        getTerminal().close();
                         button.pressButton(this);
                         return;
                     }

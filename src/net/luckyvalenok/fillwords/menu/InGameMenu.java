@@ -1,5 +1,6 @@
 package net.luckyvalenok.fillwords.menu;
 
+import com.googlecode.lanterna.SGR;
 import com.googlecode.lanterna.TerminalPosition;
 import com.googlecode.lanterna.TextColor;
 import com.googlecode.lanterna.input.KeyStroke;
@@ -23,22 +24,28 @@ public class InGameMenu extends GameMenu {
     private static final TerminalPosition START_POSITION = new TerminalPosition(6, 4);
     private final GameMap map;
     private final String name;
-    private final Map<Position, TextColor.ANSI> solved = new HashMap<>();
+    private final Map<Position, TextColor.ANSI> solved;
     private final List<Position> selected = new ArrayList<>();
     private final int widthCell = Settings.sizeCell;
-    private int score = 0;
     private State state = State.SEARCH;
     private Position currentPosition = new Position(0, 0);
     private String selectedWord = "";
     
-    public InGameMenu(GameMap map, String name) throws IOException {
-        super(100, 50);
+    public InGameMenu(GameMenu menu, GameMap map, String name, Map<Position, TextColor.ANSI> solved) {
+        super(menu);
         
         this.map = map;
         this.name = name;
-        getTerminal().setCursorVisible(false);
+        this.solved = solved;
+    }
+    
+    public InGameMenu(GameMenu menu, GameMap map, String name) throws IOException {
+        super(menu);
         
-        System.out.println(map.getWords().toString());
+        this.map = map;
+        this.name = name;
+        solved = new HashMap<>();
+        getTerminal().setCursorVisible(false);
     }
     
     @Override
@@ -76,16 +83,37 @@ public class InGameMenu extends GameMenu {
                         selected.clear();
                         draw();
                     } else {
-                        getTerminal().close();
+                        clearScreen();
+                        drawString(15, 7, "Вы уверены, что хотите выйти?", SGR.BOLD);
+                        drawString(15, 9, "Нажмите ESC, чтобы вернуться", SGR.BOLD);
+                        drawString(15, 10, "Нажмите Enter, чтобы выйти и сохранить игру", SGR.BOLD);
+                        getTerminal().flush();
+                        KeyType keyType;
+                        while ((keyType = getTerminal().readInput().getKeyType()) != KeyType.Escape && keyType != KeyType.Enter);
+                        if (keyType == KeyType.Escape) {
+                            draw();
+                        } else {
+                            Game.dataManager.saveGame(map, name, solved);
+                            new MainMenu(this).open();
+                            return;
+                        }
                     }
                     break;
                 default:
                     break;
             }
-        } while (keyStroke.getKeyType() != KeyType.EOF && !map.getWords().isEmpty());
+        } while (solved.size() != map.getColumns() * map.getRows());
         int allScore = Game.dataManager.getScore().getOrDefault(name, 0);
-        Game.dataManager.getScore().put(name, allScore + score);
+        Game.dataManager.getScore().put(name, allScore + solved.size());
         Game.dataManager.sortScore();
+        clearScreen();
+        drawString(15, 6, "Поздравляем, вы успешно набрали " + solved.size() + " очков", SGR.BOLD);
+        drawString(15, 7, "Всего очков: " + (allScore + solved.size()), SGR.BOLD);
+        drawString(15, 9, "Нажмите ESC, чтобы вернуться в главное меню", SGR.BOLD);
+        getTerminal().flush();
+        while (getTerminal().readInput().getKeyType() != KeyType.Escape);
+        clearScreen();
+        new MainMenu(this).open();
     }
     
     private TerminalPosition getRelative(int i, int j) {
@@ -96,7 +124,7 @@ public class InGameMenu extends GameMenu {
     void draw() throws IOException {
         clearScreen();
         getGraphics().setBackgroundColor(TextColor.ANSI.BLACK);
-        getGraphics().putString(0, 0, "Очков: " + score);
+        getGraphics().putString(0, 0, "Очков: " + solved.size());
         if (!selectedWord.isEmpty()) {
             getGraphics().putString(0, 1, "Выделенное слово: " + selectedWord);
         }
@@ -143,7 +171,7 @@ public class InGameMenu extends GameMenu {
     }
     
     private boolean checkPosition() {
-        Position[] positions = map.getWordPoints().get(selectedWord).values().toArray(new Position[0]);
+        Position[] positions = map.getWordPositions().get(selectedWord).values().toArray(new Position[0]);
         for (int i = 0; i < selectedWord.length(); i++) {
             if (!positions[i].equals(selected.get(i))) {
                 return false;
@@ -166,7 +194,6 @@ public class InGameMenu extends GameMenu {
                 solved.put(position, color);
             }
             selected.clear();
-            score += selectedWord.length();
             this.selectedWord = "";
             draw();
         }
