@@ -1,7 +1,0 @@
-sizeMap;6
-sizeCell;1
-colorMap;MAGENTA
-selectCellColor;BLUE
-selectWordColor;RED
-solvedWordColor;GREEN
-randomColor;true
