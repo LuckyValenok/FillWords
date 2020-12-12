@@ -153,25 +153,25 @@ public class DataManager {
                         }
                         break;
                     case "wordpos": {
-                        String[] strings1 = strings[1].split(" ");
-                        for (String s : strings1) {
-                            String[] strings2 = s.split("#");
+                        String[] wordsSplit = strings[1].split(" ");
+                        for (String s : wordsSplit) {
+                            String[] wordPosSplit = s.split("#");
                             Map<Integer, Position> positionMap = new HashMap<>();
-                            for (int i = 1; i < strings2.length; i++) {
-                                String[] split = strings2[i].split("&");
+                            for (int i = 1; i < wordPosSplit.length; i++) {
+                                String[] split = wordPosSplit[i].split("&");
                                 String[] splitPos = split[1].split("\\|");
                                 positionMap.put(Integer.parseInt(split[0]), new Position(Integer.parseInt(splitPos[0]), Integer.parseInt(splitPos[1])));
                             }
-                            wordPos.put(strings2[0], positionMap);
+                            wordPos.put(wordPosSplit[0], positionMap);
                         }
                         break;
                     }
                     case "solved": {
-                        String[] strings1 = strings[1].split(" ");
-                        for (String s : strings1) {
-                            String[] strings2 = s.split("@");
-                            String[] splitPos = strings2[0].split("\\|");
-                            solved.put(new Position(Integer.parseInt(splitPos[0]), Integer.parseInt(splitPos[1])), TextColor.ANSI.valueOf(strings2[1]));
+                        String[] wordsSplit = strings[1].split(" ");
+                        for (String s : wordsSplit) {
+                            String[] wordPosSplit = s.split("@");
+                            String[] splitPos = wordPosSplit[0].split("\\|");
+                            solved.put(new Position(Integer.parseInt(splitPos[0]), Integer.parseInt(splitPos[1])), TextColor.ANSI.valueOf(wordPosSplit[1]));
                         }
                         break;
                     }
