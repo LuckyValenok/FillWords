@@ -1,7 +1,6 @@
 package net.luckyvalenok.fillwords;
 
-import com.googlecode.lanterna.TextColor;
-
+import java.awt.Color;
 import java.lang.reflect.Field;
 import java.util.Arrays;
 import java.util.List;
@@ -10,10 +9,10 @@ import java.util.stream.Collectors;
 public class Settings {
     public static int sizeMap = 5;
     public static int sizeCell = 1;
-    public static TextColor.ANSI selectCellColor = TextColor.ANSI.BLUE;
-    public static TextColor.ANSI selectWordColor = TextColor.ANSI.RED;
-    public static TextColor.ANSI solvedWordColor = TextColor.ANSI.GREEN;
-    public static TextColor.ANSI colorMap = TextColor.ANSI.BLACK;
+    public static Color selectCellColor = Color.BLUE;
+    public static Color selectWordColor = Color.RED;
+    public static Color solvedWordColor = Color.GREEN;
+    public static Color colorMap = Color.BLACK;
     public static boolean randomColor = false;
     
     public static Object get(String field) {
@@ -37,8 +36,8 @@ public class Settings {
                 case "int":
                     value = Integer.parseInt((String) value);
                     break;
-                case "com.googlecode.lanterna.TextColor$ANSI":
-                    value = TextColor.ANSI.valueOf((String) value);
+                case "java.awt.Color":
+                    value = Color.getColor((String) value);
                     break;
                 case "boolean":
                     value = Boolean.valueOf((String) value);
@@ -62,11 +61,11 @@ public class Settings {
                     value = temp > max ? min : temp < min ? max : temp;
                     break;
                 }
-                case "com.googlecode.lanterna.TextColor$ANSI": {
-                    TextColor.ANSI temp = (TextColor.ANSI) value;
+                case "java.awt.Color": {
+                    Color color = (Color) value;
                     List<Object> objectList = Arrays.stream(availableValues).collect(Collectors.toList());
-                    int index = objectList.indexOf(temp);
-                    value = index + offset >= objectList.size() || index + offset < 0 ? temp : objectList.get(index + offset);
+                    int index = objectList.indexOf(color);
+                    value = index + offset >= objectList.size() || index + offset < 0 ? color : objectList.get(index + offset);
                     break;
                 }
                 case "boolean":

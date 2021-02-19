@@ -34,7 +34,7 @@ public enum MainButton {
             String name = textBox.getText();
             playerNameWindow.close();
             try {
-                GameMap gameMap = new GameMap(Settings.sizeMap, Settings.sizeMap);
+                GameMap gameMap = new GameMap(Game.dataManager.getAllWords(), Game.dataManager.getMaxLengthWord(), Settings.sizeMap, Settings.sizeMap);
                 new InGameMenu(menu, gameMap, name).open();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -51,7 +51,8 @@ public enum MainButton {
                 menu.drawString(12, 7, "Нет игры, которую можно продолжить", SGR.BOLD);
                 menu.drawString(12, 9, "Нажмите ESC, чтобы вернуться в главное меню", SGR.BOLD);
                 menu.refreshScreen();
-                while (menu.getTerminal().readInput().getKeyType() != KeyType.Escape);
+                while (menu.getTerminal().readInput().getKeyType() != KeyType.Escape)
+                    ;
                 menu.clearScreen();
                 new MainMenu(menu).open();
             } else {
@@ -81,7 +82,8 @@ public enum MainButton {
             }
             menu.drawString(12, 8 + i, "Нажмите ESC, чтобы вернуться в главное меню", SGR.BOLD);
             menu.refreshScreen();
-            while (menu.getTerminal().readInput().getKeyType() != KeyType.Escape);
+            while (menu.getTerminal().readInput().getKeyType() != KeyType.Escape)
+                ;
             menu.clearScreen();
             new MainMenu(menu).open();
         } catch (IOException e) {

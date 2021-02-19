@@ -13,6 +13,7 @@ import net.luckyvalenok.fillwords.objects.Position;
 import net.luckyvalenok.fillwords.utils.RandomUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.awt.Color;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,14 +25,14 @@ public class InGameMenu extends GameMenu {
     private static final TerminalPosition START_POSITION = new TerminalPosition(6, 4);
     private final GameMap map;
     private final String name;
-    private final Map<Position, TextColor.ANSI> solved;
+    private final Map<Position, TextColor> solved;
     private final List<Position> selected = new ArrayList<>();
     private final int widthCell = Settings.sizeCell;
     private State state = State.SEARCH;
     private Position currentPosition = new Position(0, 0);
     private String selectedWord = "";
     
-    public InGameMenu(GameMenu menu, GameMap map, String name, Map<Position, TextColor.ANSI> solved) {
+    public InGameMenu(GameMenu menu, GameMap map, String name, Map<Position, TextColor> solved) {
         super(menu);
         
         this.map = map;
@@ -46,6 +47,8 @@ public class InGameMenu extends GameMenu {
         this.name = name;
         solved = new HashMap<>();
         getTerminal().setCursorVisible(false);
+        
+        System.out.println(map.getWords().toString());
     }
     
     @Override
@@ -129,7 +132,9 @@ public class InGameMenu extends GameMenu {
             getGraphics().putString(0, 1, "Выделенное слово: " + selectedWord);
         }
         char[][] board = map.getBoard();
-        getGraphics().setBackgroundColor(Settings.colorMap);
+        Color colorMap = Settings.colorMap;
+        TextColor rgbColorMap = new TextColor.RGB(colorMap.getRed(), colorMap.getGreen(), colorMap.getBlue());
+        getGraphics().setBackgroundColor(rgbColorMap);
         getGraphics().putString(getRelative(0, -1), getLine('┌', '┐', '┬'));
         int centerCell = widthCell / 2;
         for (int i = 0; i < map.getRows() * (widthCell + 1); i++) {
@@ -141,10 +146,12 @@ public class InGameMenu extends GameMenu {
                 for (int k = 0; k < widthCell; k++) {
                     getGraphics().putString(getRelative(j * widthCell + j, i + k), "│");
                     if (isSelected) {
-                        getGraphics().setBackgroundColor(Settings.selectWordColor);
+                        Color selectWordColor = Settings.selectWordColor;
+                        getGraphics().setBackgroundColor(new TextColor.RGB(selectWordColor.getRed(), selectWordColor.getGreen(), selectWordColor.getBlue()));
                     }
                     if (isCurrentPosition) {
-                        getGraphics().setBackgroundColor(Settings.selectCellColor);
+                        Color selectCellColor = Settings.selectCellColor;
+                        getGraphics().setBackgroundColor(new TextColor.RGB(selectCellColor.getRed(), selectCellColor.getGreen(), selectCellColor.getBlue()));
                     }
                     if (isSolved) {
                         getGraphics().setBackgroundColor(solved.get(position));
@@ -154,7 +161,7 @@ public class InGameMenu extends GameMenu {
                     } else {
                         getGraphics().putString(getRelative(j * widthCell + j + 1, i + k), StringUtils.center(" ", widthCell));
                     }
-                    getGraphics().setBackgroundColor(Settings.colorMap);
+                    getGraphics().setBackgroundColor(rgbColorMap);
                     getGraphics().putString(getRelative(j * widthCell + j + widthCell + 1, i + k), "│");
                 }
             }
@@ -189,7 +196,8 @@ public class InGameMenu extends GameMenu {
             getGraphics().putString(getRelative(0, map.getRows() * (widthCell + 1) + 1), "Попробуйте выделить это слово по-другому");
         } else {
             state = State.SEARCH;
-            TextColor.ANSI color = Settings.randomColor ? RandomUtils.ofSafe(new TextColor.ANSI[] {Settings.colorMap, TextColor.ANSI.DEFAULT, TextColor.ANSI.WHITE}, TextColor.ANSI.values()) : Settings.solvedWordColor;
+            Color colorMap = Settings.colorMap;
+            TextColor color = Settings.randomColor ? RandomUtils.ofSafe(new TextColor[] {new TextColor.RGB(colorMap.getRed(), colorMap.getGreen(), colorMap.getBlue()), TextColor.ANSI.DEFAULT, TextColor.ANSI.WHITE}, TextColor.ANSI.values()) : new TextColor.RGB(Settings.solvedWordColor.getRed(), Settings.solvedWordColor.getGreen(), Settings.solvedWordColor.getBlue());
             for (Position position : selected) {
                 solved.put(position, color);
             }

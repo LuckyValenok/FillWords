@@ -91,7 +91,7 @@ public class DataManager {
         fileWriter.close();
     }
     
-    public void saveGame(GameMap map, String name, Map<Position, TextColor.ANSI> solved) throws IOException {
+    public void saveGame(GameMap map, String name, Map<Position, TextColor> solved) throws IOException {
         FileWriter fileWriter = new FileWriter("game.txt");
         fileWriter.write("name='" + name + "'\n");
         fileWriter.write("rows=" + map.getRows() + "\n");
@@ -112,7 +112,7 @@ public class DataManager {
         }
         if (!solved.isEmpty()) {
             fileWriter.write("\nsolved=");
-            for (Map.Entry<Position, TextColor.ANSI> entry : solved.entrySet()) {
+            for (Map.Entry<Position, TextColor> entry : solved.entrySet()) {
                 fileWriter.write(entry.getKey().x + "|" + entry.getKey().y + "@" + entry.getValue() + " ");
             }
         }
@@ -126,7 +126,7 @@ public class DataManager {
             List<String> words = null;
             char[][] board = new char[0][];
             Map<String, Map<Integer, Position>> wordPos = new HashMap<>();
-            Map<Position, TextColor.ANSI> solved = new HashMap<>();
+            Map<Position, TextColor> solved = new HashMap<>();
             BufferedReader reader = new BufferedReader(new FileReader("game.txt"));
             String line;
             while ((line = reader.readLine()) != null) {
@@ -178,7 +178,7 @@ public class DataManager {
                 }
             }
             reader.close();
-            GameMap map = new GameMap(rows, columns, words, board, wordPos);
+            GameMap map = new GameMap(Game.dataManager.getAllWords(), rows, columns, words, board, wordPos);
             return new InGameMenu(menu, map, name, solved);
         } catch (FileNotFoundException e) {
             return null;

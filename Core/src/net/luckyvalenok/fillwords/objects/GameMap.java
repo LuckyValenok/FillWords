@@ -1,6 +1,5 @@
 package net.luckyvalenok.fillwords.objects;
 
-import net.luckyvalenok.fillwords.Game;
 import net.luckyvalenok.fillwords.utils.GeneticsHelper;
 import net.luckyvalenok.fillwords.utils.RandomUtils;
 
@@ -12,14 +11,15 @@ import java.util.TreeMap;
 
 public class GameMap {
     
-    private final List<String> allWords = Game.dataManager.getAllWords();
+    private final List<String> allWords;
     private final int columns;
     private final int rows;
     private final List<String> words;
     private final char[][] board;
     private final Map<String, Map<Integer, Position>> wordPoints;
     
-    public GameMap(int columns, int rows, List<String> words, char[][] board, Map<String, Map<Integer, Position>> wordPoints) {
+    public GameMap(List<String> allWords, int columns, int rows, List<String> words, char[][] board, Map<String, Map<Integer, Position>> wordPoints) {
+        this.allWords = allWords;
         this.columns = columns;
         this.rows = rows;
         this.wordPoints = wordPoints;
@@ -27,14 +27,15 @@ public class GameMap {
         this.board = board;
     }
     
-    public GameMap(int columns, int rows) {
+    public GameMap(List<String> allWords, int maxLengthWord, int columns, int rows) {
+        this.allWords = allWords;
         this.columns = columns;
         this.rows = rows;
         wordPoints = new HashMap<>();
         words = new ArrayList<>();
         
         board = new char[rows][columns];
-        generateBoard(Game.dataManager.getMaxLengthWord());
+        generateBoard(maxLengthWord);
     }
     
     public void generateBoard(int maxLengthWord) {

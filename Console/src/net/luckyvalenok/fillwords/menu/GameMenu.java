@@ -12,7 +12,7 @@ import com.googlecode.lanterna.terminal.Terminal;
 
 import java.io.IOException;
 
-public abstract class GameMenu {
+public abstract class GameMenu extends AbstractGameMenu {
     
     private final Terminal terminal;
     private final TextGraphics graphics;
@@ -44,6 +44,7 @@ public abstract class GameMenu {
         this.terminal = menu.getTerminal();
         this.graphics = menu.getGraphics();
         this.gui = menu.getGui();
+        this.screen = menu.getScreen();
     }
     
     abstract void onKeyInput() throws IOException;
@@ -83,13 +84,5 @@ public abstract class GameMenu {
     
     public void drawString(int x, int y, String string, SGR srg) {
         getGraphics().putString(x, y, string, srg);
-    }
-    
-    public void drawButton(MainButton button, MainButton selected) {
-        getGraphics().setForegroundColor(TextColor.ANSI.WHITE);
-        if (selected == button) {
-            getGraphics().setForegroundColor(TextColor.ANSI.GREEN);
-        }
-        drawString(30, button.getY(), button.getName(), SGR.BOLD);
     }
 }

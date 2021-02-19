@@ -92,4 +92,12 @@ public class MainMenu extends GameMenu {
             drawString(20, y, string, SGR.BOLD);
         }
     }
+    
+    public void drawButton(MainButton button, MainButton selected) {
+        getGraphics().setForegroundColor(TextColor.ANSI.WHITE);
+        if (selected == button) {
+            getGraphics().setForegroundColor(TextColor.ANSI.GREEN);
+        }
+        drawString(30, button.getY(), button.getName(), SGR.BOLD);
+    }
 }
